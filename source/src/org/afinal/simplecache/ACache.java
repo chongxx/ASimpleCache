@@ -640,7 +640,15 @@ public class ACache {
 		}
 
 		private File newFile(String key) {
-			return new File(cacheDir, key.hashCode() + "");
+			File file = new File(cacheDir, key.hashCode() + "");
+			// 在put文件的时候还是需要检查一下夫缓存目录是否存在
+			// 不做一下处理如果手机系统或者第三方清理软件，etc 导致缓存目录被删除
+			// 在没有完全关闭app之前缓存的功能都不能用，也不能自动修复。
+			 if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+                		RuntimeException e = new RuntimeException("can't make dirs in "
+                        	+ cacheDir.getAbsolutePath());
+			 }
+			return file;
 		}
 
 		private boolean remove(String key) {
